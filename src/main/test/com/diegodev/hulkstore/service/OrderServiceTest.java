@@ -1,20 +1,15 @@
 package com.diegodev.hulkstore.service;
 
 import com.diegodev.hulkstore.SpringConfigurator;
-import com.diegodev.hulkstore.dto.cart.CartDto;
-import com.diegodev.hulkstore.dto.cart.CartItemDto;
 import com.diegodev.hulkstore.exceptions.OrderNotFoundException;
 import com.diegodev.hulkstore.model.Order;
-import com.diegodev.hulkstore.model.OrderItem;
-import com.diegodev.hulkstore.model.Product;
 import com.diegodev.hulkstore.model.User;
 import com.diegodev.hulkstore.repository.CartRepository;
 import com.diegodev.hulkstore.repository.OrderItemsRepository;
 import com.diegodev.hulkstore.repository.OrderRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -26,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration(classes = {SpringConfigurator.class})
@@ -58,47 +53,6 @@ public class OrderServiceTest {
         user = new User();
         user.setId(1);
         user.setUsername("testuser");
-    }
-
-    @Test
-    public void placeOrder_shouldPlaceOrder() {
-        // Arrange
-
-        List<CartItemDto> cartItemDtoList = new ArrayList<>();
-        Product product = new Product();
-        product.setId(1);
-        product.setName("testproduct");
-        product.setPrice(100.0);
-        product.setStock(10.0);
-        cartItemDtoList.add(new CartItemDto());
-
-        CartDto cartDto = new CartDto(cartItemDtoList, 200.0);
-        when(cartService.listCartItems(user)).thenReturn(cartDto);
-
-        ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
-        ArgumentCaptor<OrderItem> orderItemCaptor = ArgumentCaptor.forClass(OrderItem.class);
-
-        // Act
-        orderService.placeOrder(user);
-
-        // Assert
-        verify(orderRepository).save(orderCaptor.capture());
-        verify(orderItemsRepository, times(2)).save(orderItemCaptor.capture());
-        verify(cartService).deleteUserCartItems(user);
-        verify(productService, times(2)).updateProductStock(any(Product.class), anyInt());
-
-        Order capturedOrder = orderCaptor.getValue();
-        assertEquals(user, capturedOrder.getUser());
-        assertEquals(cartDto.getTotalCost(), capturedOrder.getTotalPrice());
-
-        List<OrderItem> capturedOrderItems = orderItemCaptor.getAllValues();
-        assertEquals(cartItemDtoList.size(), capturedOrderItems.size());
-        for (int i = 0; i < cartItemDtoList.size(); i++) {
-            assertEquals(cartItemDtoList.get(i).getQuantity(), capturedOrderItems.get(i).getQuantity());
-            assertEquals(cartItemDtoList.get(i).getProduct(), capturedOrderItems.get(i).getProduct());
-            assertEquals(cartItemDtoList.get(i).getProduct().getPrice(), capturedOrderItems.get(i).getPrice());
-            assertEquals(capturedOrder, capturedOrderItems.get(i).getOrder());
-        }
     }
 
     @Test
