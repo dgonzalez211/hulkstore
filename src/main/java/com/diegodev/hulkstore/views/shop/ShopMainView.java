@@ -1,18 +1,25 @@
 package com.diegodev.hulkstore.views.shop;
 
-import com.diegodev.hulkstore.data.entity.shop.Product;
-import com.diegodev.hulkstore.data.service.ProductService;
+import com.diegodev.hulkstore.model.Product;
+import com.diegodev.hulkstore.service.ShopService;
+import com.diegodev.hulkstore.utils.NotificationHelper;
 import com.diegodev.hulkstore.views.MainLayout;
 import com.diegodev.hulkstore.views.component.ProductCard;
+import com.diegodev.hulkstore.views.util.AuthenticationUtil;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.OrderedList;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -28,17 +35,19 @@ import java.util.List;
 @PermitAll
 public class ShopMainView extends Main implements HasComponents, HasStyle {
 
-    private final ProductService productService;
+    private final ShopService service;
     private OrderedList imageContainer;
 
-    public ShopMainView(ProductService productService) {
-        this.productService = productService;
+    public ShopMainView(ShopService service) {
+        this.service = service;
         constructUI();
+        loadProducts();
     }
 
     private void constructUI() {
         addClassNames("shop-main-view");
-        addClassNames(MaxWidth.SCREEN_LARGE, Margin.Horizontal.AUTO, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
+        addClassNames(MaxWidth.SCREEN_MEDIUM, Margin.Horizontal.MEDIUM, Padding.Bottom.SMALL, Padding.Horizontal.SMALL);
+        setMaxWidth("1600px");
 
         HorizontalLayout container = new HorizontalLayout();
         container.addClassNames(AlignItems.CENTER, JustifyContent.BETWEEN);
@@ -50,32 +59,45 @@ public class ShopMainView extends Main implements HasComponents, HasStyle {
         description.addClassNames(Margin.Bottom.XLARGE, Margin.Top.NONE, TextColor.SECONDARY);
         headerContainer.add(header, description);
 
-        Select<String> sortBy = new Select<>();
-        sortBy.setLabel("Sort by");
-        sortBy.setItems("Name");
-        sortBy.setValue("Name");
+        Button cartButton = new Button("Checkout", new Icon(VaadinIcon.CART));
+        cartButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+        cartButton.setHeight("60px");
+        cartButton.addClickListener(buttonClickEvent -> {
+            AuthenticationUtil.doIfAuthenticated(user -> {
+                if (service.isUserCartEmpty(user)) {
+                    NotificationHelper.showNotification("Your car is empty, add items first!", NotificationVariant.LUMO_ERROR);
+                    return;
+                }
+                UI.getCurrent().navigate(CheckoutFormView.class);
+            });
+        });
 
         imageContainer = new OrderedList();
-        imageContainer.addClassNames(Gap.MEDIUM, Display.GRID, ListStyleType.NONE, Margin.NONE, Padding.NONE);
+        imageContainer.addClassNames(Gap.MEDIUM, Display.INLINE_FLEX, ListStyleType.NONE, Margin.SMALL, Padding.SMALL);
+        imageContainer.setMaxWidth("1600px");
 
-        container.add(headerContainer, sortBy);
+        container.add(headerContainer, cartButton);
         add(container, imageContainer);
-        loadProducts();
     }
 
     private void loadProducts() {
-        List<Product> products = productService.findAllProducts(null);
+        List<Product> products = service.findAllProducts(null);
         products.forEach(product -> {
-            ProductCard card = new ProductCard(product);
-            if(product.isOutOfStock()) {
+            ProductCard card = new ProductCard(service);
+            card.addHeader(product.getName());
+            card.addSubtitle(product.getCategory());
+            card.addDescription(product.getDescription());
+            card.setProductImage(product.getImageURL());
+            card.setProductId(product.getId());
+
+            if(service.isOutOfStock(product.getId())) {
                 card.addBadge("Out of stock", "badge error");
             } else {
                 card.addBadge("Available", "badge success");
+                card.addButtonLayout();
             }
 
             imageContainer.add(card);
-            //card.addClickListener(event -> {
-            //UI.getCurrent().navigate(RegridView.class);
         });
     }
 }

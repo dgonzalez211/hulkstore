@@ -56,3 +56,40 @@
       align-items: center;
       box-sizing: border-box;
 }
+
+.login-textfield {
+      appearance: none;
+      user-select: text;
+      margin: 0;
+      font: inherit;
+      font-weight: 400;
+      line-height: normal;
+      height: 20px;
+      border-radius: 4px;
+      padding: 3px 7px;
+      border: 1px solid #c9c9c9;
+      background: white;
+      color: #474747;
+      width: 185px;
+}
+
+.login-textfield:focus {
+      outline: none;
+      border-color: #00506A;
+}
+
+.backdrop {
+      background-image: url("../../../src/main/resources/images/hulk_wallpaper.jpg");
+      background-position: center;
+      background-size: cover;
+      display: flex;
+      height: 500px;
+}
+.vaadin-login-overlay {
+      align-items: center;
+      display: flex;
+      max-width: 300px;
+}
+.vaadin-login-overlay-wrapper {
+      background-image: none;
+}

@@ -1,7 +1,7 @@
 package com.diegodev.hulkstore.security;
 
-import com.diegodev.hulkstore.data.entity.user.User;
-import com.diegodev.hulkstore.data.service.repository.UserRepository;
+import com.diegodev.hulkstore.model.User;
+import com.diegodev.hulkstore.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

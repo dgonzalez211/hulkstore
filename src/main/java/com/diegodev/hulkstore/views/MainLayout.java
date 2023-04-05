@@ -2,11 +2,10 @@ package com.diegodev.hulkstore.views;
 
 import com.diegodev.hulkstore.components.appnav.AppNav;
 import com.diegodev.hulkstore.components.appnav.AppNavItem;
-import com.diegodev.hulkstore.data.entity.user.User;
+import com.diegodev.hulkstore.model.User;
 import com.diegodev.hulkstore.security.AuthenticatedUser;
 import com.diegodev.hulkstore.views.about.AboutView;
-import com.diegodev.hulkstore.views.admin.CustomerListView;
-import com.diegodev.hulkstore.views.admin.ProductListView;
+import com.diegodev.hulkstore.views.admin.AdminPanelView;
 import com.diegodev.hulkstore.views.shop.ShopMainView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -49,9 +48,6 @@ public class MainLayout extends AppLayout {
         viewTitle = new H2();
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
 
-        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //Span span = new Span(authentication.getName());
-
         addToNavbar(true, toggle, viewTitle);
     }
 
@@ -74,14 +70,11 @@ public class MainLayout extends AppLayout {
         if (accessChecker.hasAccess(ShopMainView.class)) {
             nav.addItem(new AppNavItem("Shop", ShopMainView.class, LineAwesomeIcon.SHOPPING_CART_SOLID.create()));
         }
+        if (accessChecker.hasAccess(AdminPanelView.class)) {
+            nav.addItem(new AppNavItem("Admin Panel", AdminPanelView.class, LineAwesomeIcon.USER_COG_SOLID.create()));
+        }
         if (accessChecker.hasAccess(AboutView.class)) {
-            nav.addItem(new AppNavItem("About", AboutView.class, LineAwesomeIcon.FILE.create()));
-        }
-        if (accessChecker.hasAccess(ProductListView.class)) {
-            nav.addItem(new AppNavItem("Product List", ProductListView.class, LineAwesomeIcon.FILE.create()));
-        }
-        if (accessChecker.hasAccess(CustomerListView.class)) {
-            nav.addItem(new AppNavItem("Customer List", CustomerListView.class, LineAwesomeIcon.FILE.create()));
+            nav.addItem(new AppNavItem("About", AboutView.class, LineAwesomeIcon.HEART_SOLID.create()));
         }
 
         return nav;

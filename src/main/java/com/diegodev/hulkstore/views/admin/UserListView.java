@@ -1,9 +1,8 @@
 package com.diegodev.hulkstore.views.admin;
 
-import com.diegodev.hulkstore.model.Product;
-import com.diegodev.hulkstore.service.ProductService;
-import com.diegodev.hulkstore.views.component.ProductForm;
-import com.vaadin.flow.component.button.Button;
+import com.diegodev.hulkstore.model.User;
+import com.diegodev.hulkstore.service.UserService;
+import com.diegodev.hulkstore.views.component.UserForm;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -18,15 +17,15 @@ import org.springframework.stereotype.Component;
 @RolesAllowed("ADMIN")
 @Component
 @Scope("prototype")
-@Route(value = "product-list", layout = AdminPanelView.class)
-@PageTitle("Products List | HulkStore")
-public class ProductListView extends VerticalLayout {
-    Grid<Product> grid = new Grid<>(Product.class);
+@Route(value = "user-list", layout = AdminPanelView.class)
+@PageTitle("Users List | HulkStore")
+public class UserListView extends VerticalLayout {
+    Grid<User> grid = new Grid<>(User.class);
     TextField filterText = new TextField();
-    ProductForm form;
-    ProductService service;
+    UserForm form;
+    UserService service;
 
-    public ProductListView(ProductService service) {
+    public UserListView(UserService service) {
         this.service = service;
         addClassName("list-view");
         setSizeFull();
@@ -48,21 +47,21 @@ public class ProductListView extends VerticalLayout {
     }
 
     private void configureForm() {
-        form = new ProductForm();
+        form = new UserForm();
         form.setWidth("25em");
-        form.addListener(ProductForm.SaveEvent.class, this::saveProduct);
-        form.addListener(ProductForm.DeleteEvent.class, this::deleteProduct);
-        form.addListener(ProductForm.CloseEvent.class, e -> closeEditor());
+        form.addListener(UserForm.SaveEvent.class, this::saveUser);
+        form.addListener(UserForm.DeleteEvent.class, this::deleteUser);
+        form.addListener(UserForm.CloseEvent.class, e -> closeEditor());
     }
 
     private void configureGrid() {
-        grid.addClassNames("contact-grid");
+        grid.addClassNames("users-grid");
         grid.setSizeFull();
-        grid.setColumns("code", "name", "description", "category", "stock", "price");
+        grid.setColumns("username", "name", "email");
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
 
         grid.asSingleSelect().addValueChangeListener(event ->
-                editProduct(event.getValue()));
+                editUser(event.getValue()));
     }
 
     private HorizontalLayout getToolbar() {
@@ -71,48 +70,40 @@ public class ProductListView extends VerticalLayout {
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
         filterText.addValueChangeListener(e -> updateList());
 
-        Button addProductButton = new Button("Add product");
-        addProductButton.addClickListener(click -> addProduct());
-
-        HorizontalLayout toolbar = new HorizontalLayout(filterText, addProductButton);
+        HorizontalLayout toolbar = new HorizontalLayout(filterText);
         toolbar.addClassName("toolbar");
         return toolbar;
     }
 
-    public void editProduct(Product product) {
-        if (product == null) {
+    public void editUser(User contact) {
+        if (contact == null) {
             closeEditor();
         } else {
-            form.setProduct(product);
+            form.setUser(contact);
             form.setVisible(true);
             addClassName("editing");
         }
     }
 
-    private void saveProduct(ProductForm.SaveEvent event) {
-        service.saveProduct(event.getProduct());
+    private void saveUser(UserForm.SaveEvent event) {
+        service.saveUser(event.getUser());
         updateList();
         closeEditor();
     }
 
-    private void deleteProduct(ProductForm.DeleteEvent event) {
-        service.deleteProduct(event.getProduct());
+    private void deleteUser(UserForm.DeleteEvent event) {
+        service.deleteUser(event.getUser());
         updateList();
         closeEditor();
     }
 
     private void closeEditor() {
-        form.setProduct(null);
+        form.setUser(null);
         form.setVisible(false);
         removeClassName("editing");
     }
 
-    private void addProduct() {
-        grid.asSingleSelect().clear();
-        editProduct(new Product());
-    }
-
     private void updateList() {
-        grid.setItems(service.findAllProducts(filterText.getValue()));
+        grid.setItems(service.findAllUsers(filterText.getValue()));
     }
 }

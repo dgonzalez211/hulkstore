@@ -1,7 +1,8 @@
 package com.diegodev.hulkstore.security;
 
-import com.diegodev.hulkstore.data.entity.user.User;
-import com.diegodev.hulkstore.data.service.repository.UserRepository;
+
+import com.diegodev.hulkstore.model.User;
+import com.diegodev.hulkstore.repository.UserRepository;
 import com.vaadin.flow.spring.security.AuthenticationContext;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;

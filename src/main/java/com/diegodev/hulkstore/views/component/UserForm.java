@@ -1,6 +1,6 @@
 package com.diegodev.hulkstore.views.component;
 
-import com.diegodev.hulkstore.model.Product;
+import com.diegodev.hulkstore.model.User;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -9,36 +9,31 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.shared.Registration;
 
-public class ProductForm extends FormLayout {
+public class UserForm extends FormLayout {
 
-    private Product product;
+    private User user;
     TextField name = new TextField("Name");
-    TextField code = new TextField("Code");
-    TextField description = new TextField("Description");
-    TextField category = new TextField("Category");
-    NumberField stock = new NumberField("Stock");
-    NumberField price = new NumberField("Price");
-    TextField imageURL = new TextField("Image URL");
+    TextField username = new TextField("Username");
+    TextField email = new TextField("Email");
 
     Button save = new Button("Save");
     Button delete = new Button("Delete");
     Button close = new Button("Cancel");
 
     // Other fields omitted
-    Binder<Product> binder = new BeanValidationBinder<>(Product.class);
+    Binder<User> binder = new BeanValidationBinder<>(User.class);
 
-    public ProductForm() {
-        addClassName("product-form");
+    public UserForm() {
+        addClassName("user-form");
         binder.bindInstanceFields(this);
 
-        add(name, code, description, category, stock, price, imageURL, createButtonsLayout());
+        add(name, username, email, createButtonsLayout());
     }
 
     private Component createButtonsLayout() {
@@ -50,7 +45,7 @@ public class ProductForm extends FormLayout {
         close.addClickShortcut(Key.ESCAPE);
 
         save.addClickListener(event -> validateAndSave());
-        delete.addClickListener(event -> fireEvent(new DeleteEvent(this, product)));
+        delete.addClickListener(event -> fireEvent(new DeleteEvent(this, user)));
         close.addClickListener(event -> fireEvent(new CloseEvent(this)));
 
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
@@ -59,47 +54,47 @@ public class ProductForm extends FormLayout {
 
     private void validateAndSave() {
         try {
-            binder.writeBean(product);
-            fireEvent(new SaveEvent(this, product));
+            binder.writeBean(user);
+            fireEvent(new SaveEvent(this, user));
         } catch (ValidationException e) {
             e.printStackTrace();
         }
     }
 
-    public void setProduct(Product contact) {
-        this.product = contact;
-        binder.readBean(contact);
+    public void setUser(User user) {
+        this.user = user;
+        binder.readBean(user);
     }
 
     // Events
-    public static abstract class ProductFormEvent extends ComponentEvent<ProductForm> {
-        private final Product contact;
+    public static abstract class UserFormEvent extends ComponentEvent<UserForm> {
+        private final User contact;
 
-        protected ProductFormEvent(ProductForm source, Product contact) {
+        protected UserFormEvent(UserForm source, User contact) {
             super(source, false);
             this.contact = contact;
         }
 
-        public Product getProduct() {
+        public User getUser() {
             return contact;
         }
     }
 
-    public static class SaveEvent extends ProductFormEvent {
-        SaveEvent(ProductForm source, Product contact) {
+    public static class SaveEvent extends UserFormEvent {
+        SaveEvent(UserForm source, User contact) {
             super(source, contact);
         }
     }
 
-    public static class DeleteEvent extends ProductFormEvent {
-        DeleteEvent(ProductForm source, Product contact) {
+    public static class DeleteEvent extends UserFormEvent {
+        DeleteEvent(UserForm source, User contact) {
             super(source, contact);
         }
 
     }
 
-    public static class CloseEvent extends ProductFormEvent {
-        CloseEvent(ProductForm source) {
+    public static class CloseEvent extends UserFormEvent {
+        CloseEvent(UserForm source) {
             super(source, null);
         }
     }
