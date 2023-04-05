@@ -72,21 +72,17 @@ public class ProductCard extends ListItem {
         Button buyButton = new Button("Buy", new Icon(VaadinIcon.MONEY));
         buyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
 
-        buyButton.addClickListener(buttonClickEvent -> {
-            AuthenticationUtil.doIfAuthenticated(user -> {
-                service.addToCart(quantityField.getValue(), product, user);
-                UI.getCurrent().navigate(CheckoutFormView.class);
-            });
-        });
+        buyButton.addClickListener(buttonClickEvent -> AuthenticationUtil.doIfAuthenticated(user -> {
+            service.addToCart(quantityField.getValue(), product, user);
+            UI.getCurrent().navigate(CheckoutFormView.class);
+        }));
 
         Button addToCartButton = new Button("Add to Cart", new Icon(VaadinIcon.CART));
         addToCartButton.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-        addToCartButton.addClickListener(buttonClickEvent -> {
-            AuthenticationUtil.doIfAuthenticated(user -> {
-                service.addToCart(quantityField.getValue(), product, user);
-                NotificationHelper.showNotification("Product added to your shopping cart!", NotificationVariant.LUMO_SUCCESS);
-            });
-        });
+        addToCartButton.addClickListener(buttonClickEvent -> AuthenticationUtil.doIfAuthenticated(user -> {
+            service.addToCart(quantityField.getValue(), product, user);
+            NotificationHelper.showNotification("Product added to your shopping cart!", NotificationVariant.LUMO_SUCCESS);
+        }));
 
         buttonLayout.add(buyButton, addToCartButton, quantityField);
         add(buttonLayout);

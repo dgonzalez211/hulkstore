@@ -18,14 +18,14 @@ public class AboutView extends VerticalLayout {
     public AboutView() {
         setSpacing(false);
 
-        Image img = new Image("images/empty-plant.png", "placeholder plant");
+        Image img = new Image("https://avatars.githubusercontent.com/u/87575018?v=4", "dgonzalez211 avatar");
         img.setWidth("200px");
         add(img);
 
-        H2 header = new H2("This place intentionally left empty");
+        H2 header = new H2("Made with \uD83D\uDC9C by Diego Gonzalez");
         header.addClassNames(Margin.Top.XLARGE, Margin.Bottom.MEDIUM);
         add(header);
-        add(new Paragraph("It’s a place where you can grow your own UI 🤗"));
+        add(new Paragraph("Technical assessment for Todo1 🤗"));
 
         setSizeFull();
         setJustifyContentMode(JustifyContentMode.CENTER);

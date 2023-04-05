@@ -4,9 +4,7 @@ import com.diegodev.hulkstore.model.User;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -37,19 +35,18 @@ public class UserForm extends FormLayout {
     }
 
     private Component createButtonsLayout() {
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        GridFormHelper.addVariants(save, delete, close);
 
-        save.addClickShortcut(Key.ENTER);
-        close.addClickShortcut(Key.ESCAPE);
-
-        save.addClickListener(event -> validateAndSave());
-        delete.addClickListener(event -> fireEvent(new DeleteEvent(this, user)));
-        close.addClickListener(event -> fireEvent(new CloseEvent(this)));
+        addListeners();
 
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
         return new HorizontalLayout(save, delete, close);
+    }
+
+    private void addListeners() {
+        save.addClickListener(event -> validateAndSave());
+        delete.addClickListener(event -> fireEvent(new DeleteEvent(this, user)));
+        close.addClickListener(event -> fireEvent(new CloseEvent(this)));
     }
 
     private void validateAndSave() {
@@ -68,27 +65,27 @@ public class UserForm extends FormLayout {
 
     // Events
     public static abstract class UserFormEvent extends ComponentEvent<UserForm> {
-        private final User contact;
+        private final User user;
 
-        protected UserFormEvent(UserForm source, User contact) {
+        protected UserFormEvent(UserForm source, User user) {
             super(source, false);
-            this.contact = contact;
+            this.user = user;
         }
 
         public User getUser() {
-            return contact;
+            return user;
         }
     }
 
     public static class SaveEvent extends UserFormEvent {
-        SaveEvent(UserForm source, User contact) {
-            super(source, contact);
+        SaveEvent(UserForm source, User user) {
+            super(source, user);
         }
     }
 
     public static class DeleteEvent extends UserFormEvent {
-        DeleteEvent(UserForm source, User contact) {
-            super(source, contact);
+        DeleteEvent(UserForm source, User user) {
+            super(source, user);
         }
 
     }

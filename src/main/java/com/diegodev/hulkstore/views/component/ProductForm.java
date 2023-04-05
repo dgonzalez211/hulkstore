@@ -4,9 +4,7 @@ import com.diegodev.hulkstore.model.Product;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -42,19 +40,18 @@ public class ProductForm extends FormLayout {
     }
 
     private Component createButtonsLayout() {
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        GridFormHelper.addVariants(save, delete, close);
 
-        save.addClickShortcut(Key.ENTER);
-        close.addClickShortcut(Key.ESCAPE);
-
-        save.addClickListener(event -> validateAndSave());
-        delete.addClickListener(event -> fireEvent(new DeleteEvent(this, product)));
-        close.addClickListener(event -> fireEvent(new CloseEvent(this)));
+        addListeners();
 
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
         return new HorizontalLayout(save, delete, close);
+    }
+
+    private void addListeners() {
+        save.addClickListener(event -> validateAndSave());
+        delete.addClickListener(event -> fireEvent(new DeleteEvent(this, product)));
+        close.addClickListener(event -> fireEvent(new CloseEvent(this)));
     }
 
     private void validateAndSave() {
@@ -66,36 +63,35 @@ public class ProductForm extends FormLayout {
         }
     }
 
-    public void setProduct(Product contact) {
-        this.product = contact;
-        binder.readBean(contact);
+    public void setProduct(Product product) {
+        this.product = product;
+        binder.readBean(product);
     }
 
     // Events
     public static abstract class ProductFormEvent extends ComponentEvent<ProductForm> {
-        private final Product contact;
+        private final Product product;
 
-        protected ProductFormEvent(ProductForm source, Product contact) {
+        protected ProductFormEvent(ProductForm source, Product product) {
             super(source, false);
-            this.contact = contact;
+            this.product = product;
         }
 
         public Product getProduct() {
-            return contact;
+            return product;
         }
     }
 
     public static class SaveEvent extends ProductFormEvent {
-        SaveEvent(ProductForm source, Product contact) {
-            super(source, contact);
+        SaveEvent(ProductForm source, Product product) {
+            super(source, product);
         }
     }
 
     public static class DeleteEvent extends ProductFormEvent {
-        DeleteEvent(ProductForm source, Product contact) {
-            super(source, contact);
+        DeleteEvent(ProductForm source, Product product) {
+            super(source, product);
         }
-
     }
 
     public static class CloseEvent extends ProductFormEvent {
